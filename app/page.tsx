@@ -29,11 +29,11 @@ export default function Home() {
     <main className="min-h-screen bg-gray-100 p-8 text-gray-900">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6 text-center text-blue-900">
-          Murdle Companion
+          Murdle Companion BR
         </h1>
         
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Anel Decifrador (Atbash)</h2>
+          <h2 className="text-xl font-semibold mb-2">Anel Decifrador Código Detetive (<a href="https://pt.wikipedia.org/wiki/Atbash">Cifra de Atbash</a>)</h2>
           <p className="text-sm text-gray-600 mb-4">
             Digite o texto cifrado (ou texto plano) abaixo para traduzir automaticamente.
           </p>

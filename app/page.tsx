@@ -224,6 +224,7 @@ export default function Home() {
             Creditos dos Icones (Flaticon)
           </summary>
           <div className="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 max-w-lg border border-gray-200 p-3 rounded bg-white">
+            <a target="_blank" href="https://icons8.com/icon/p3miLroKw4iR/magnifying-glass-tilted-left">Magnifying Glass</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
             <a href="https://www.flaticon.com/free-icons/aries" target="_blank" rel="noopener noreferrer" className="hover:underline">Aries por Freepik</a>
             <a href="https://www.flaticon.com/free-icons/taurus" target="_blank" rel="noopener noreferrer" className="hover:underline">Touro por Freepik</a>
             <a href="https://www.flaticon.com/free-icons/gemini" target="_blank" rel="noopener noreferrer" className="hover:underline">Gemeos por bqlqn</a>

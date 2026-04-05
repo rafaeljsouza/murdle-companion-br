@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [inputText, setInputText] = useState("");
+  const [cipherType, setCipherType] = useState("atbash"); // Novo estado para escolher a cifra
   
   // Estados para a busca por data
   const [searchDay, setSearchDay] = useState("");
@@ -24,6 +25,7 @@ export default function Home() {
     { name: "Peixes", symbol: "Peixes", element: "Agua", start: "02-19", end: "03-20", icon: "/icons/pisces.png" }
   ];
 
+  // Algoritmo 1: Atbash (Inverte o alfabeto)
   const decodeAtbash = (text: string) => {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const reversedAlphabet = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
@@ -44,9 +46,42 @@ export default function Home() {
     return result;
   };
 
+  // Algoritmo 2: Cifra da Letra Seguinte (Decodifica pegando a letra anterior)
+  const decodeNextLetter = (text: string) => {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let result = "";
+
+    for (let i = 0; i < text.length; i++) {
+      let char = text[i].toUpperCase();
+      let index = alphabet.indexOf(char);
+
+      if (index !== -1) {
+        let isLowerCase = text[i] === text[i].toLowerCase() && text[i] !== text[i].toUpperCase();
+        // Subtrai 1 do indice. O +26 e o %26 garantem que se a letra for 'A' (indice 0), ela de a volta para 'Z' (indice 25)
+        let newIndex = (index - 1 + 26) % 26;
+        let newChar = alphabet[newIndex];
+        result += isLowerCase ? newChar.toLowerCase() : newChar;
+      } else {
+        result += text[i];
+      }
+    }
+    return result;
+  };
+
+  // Funcao que decide qual algoritmo usar com base no select
+  const getDecodedText = () => {
+    if (!inputText) return "";
+    
+    if (cipherType === "atbash") {
+      return decodeAtbash(inputText);
+    } else if (cipherType === "nextLetter") {
+      return decodeNextLetter(inputText);
+    }
+    return inputText;
+  };
+
   // Logica de filtragem apenas por data
   const filteredSigns = zodiacSigns.filter((sign) => {
-    // Se nao tiver os dois preenchidos, mostra todos
     if (!searchMonth || !searchDay) return true;
 
     const formattedDate = `${searchMonth.padStart(2, "0")}-${searchDay.padStart(2, "0")}`;
@@ -54,7 +89,6 @@ export default function Home() {
     if (sign.start <= sign.end) {
       return formattedDate >= sign.start && formattedDate <= sign.end;
     } else {
-      // Caso especial Capricornio (vira o ano)
       return formattedDate >= sign.start || formattedDate <= sign.end;
     }
   });
@@ -74,21 +108,38 @@ export default function Home() {
         </h1>
         
         <div>
-          <h2 className="text-xl font-semibold mb-2">Anel Decifrador Codigo Detetive (<a href="https://pt.wikipedia.org/wiki/Atbash" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Cifra de Atbash</a>)</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Digite o texto cifrado (ou texto plano) abaixo para traduzir automaticamente.
-          </p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+            <div>
+              <h2 className="text-xl font-semibold mb-1">Anel Decifrador</h2>
+              <p className="text-sm text-gray-600">
+                Selecione o tipo de cifra e digite o texto para traduzir.
+              </p>
+            </div>
+            
+            {/* Seletor do Tipo de Cifra */}
+            <div className="w-full sm:w-auto">
+              <label className="sr-only">Tipo de Cifra</label>
+              <select 
+                className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer font-medium"
+                value={cipherType}
+                onChange={(e) => setCipherType(e.target.value)}
+              >
+                <option value="atbash">Cifra de Atbash (Invertida)</option>
+                <option value="nextLetter">Cifra da Letra Seguinte (+1)</option>
+              </select>
+            </div>
+          </div>
           
           <textarea
             className="w-full h-32 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-            placeholder="Digite o texto aqui..."
+            placeholder="Digite o texto cifrado aqui..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
           />
           
           <h3 className="text-lg font-medium mb-2">Resultado:</h3>
           <div className="w-full min-h-[8rem] p-3 bg-gray-50 border border-gray-200 rounded whitespace-pre-wrap">
-            {inputText ? decodeAtbash(inputText) : <span className="text-gray-400">A traducao aparecera aqui...</span>}
+            {inputText ? getDecodedText() : <span className="text-gray-400">A traducao aparecera aqui...</span>}
           </div>
         </div>
       </div>
@@ -224,7 +275,6 @@ export default function Home() {
             Creditos dos Icones (Flaticon)
           </summary>
           <div className="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 max-w-lg border border-gray-200 p-3 rounded bg-white">
-            <a target="_blank" href="https://icons8.com/icon/p3miLroKw4iR/magnifying-glass-tilted-left">Magnifying Glass</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
             <a href="https://www.flaticon.com/free-icons/aries" target="_blank" rel="noopener noreferrer" className="hover:underline">Aries por Freepik</a>
             <a href="https://www.flaticon.com/free-icons/taurus" target="_blank" rel="noopener noreferrer" className="hover:underline">Touro por Freepik</a>
             <a href="https://www.flaticon.com/free-icons/gemini" target="_blank" rel="noopener noreferrer" className="hover:underline">Gemeos por bqlqn</a>

@@ -4,9 +4,8 @@ import { useState } from "react";
 
 export default function Home() {
   const [inputText, setInputText] = useState("");
-  const [cipherType, setCipherType] = useState("atbash"); // Novo estado para escolher a cifra
+  const [cipherType, setCipherType] = useState("atbash");
   
-  // Estados para a busca por data
   const [searchDay, setSearchDay] = useState("");
   const [searchMonth, setSearchMonth] = useState("");
   
@@ -25,7 +24,6 @@ export default function Home() {
     { name: "Peixes", symbol: "Peixes", element: "Agua", start: "02-19", end: "03-20", icon: "/icons/pisces.png" }
   ];
 
-  // Algoritmo 1: Atbash (Inverte o alfabeto)
   const decodeAtbash = (text: string) => {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const reversedAlphabet = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
@@ -46,8 +44,8 @@ export default function Home() {
     return result;
   };
 
-  // Algoritmo 2: Cifra da Letra Seguinte (Decodifica pegando a letra anterior)
-  const decodeNextLetter = (text: string) => {
+  // Funcao unificada para Cifra de Cesar (aceita deslocamentos positivos ou negativos)
+  const decodeCaesar = (text: string, shift: number) => {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let result = "";
 
@@ -57,8 +55,8 @@ export default function Home() {
 
       if (index !== -1) {
         let isLowerCase = text[i] === text[i].toLowerCase() && text[i] !== text[i].toUpperCase();
-        // Subtrai 1 do indice. O +26 e o %26 garantem que se a letra for 'A' (indice 0), ela de a volta para 'Z' (indice 25)
-        let newIndex = (index - 1 + 26) % 26;
+        // O +26 garante que numeros negativos funcionem corretamente no modulo
+        let newIndex = (index + shift + 26) % 26;
         let newChar = alphabet[newIndex];
         result += isLowerCase ? newChar.toLowerCase() : newChar;
       } else {
@@ -68,19 +66,19 @@ export default function Home() {
     return result;
   };
 
-  // Funcao que decide qual algoritmo usar com base no select
   const getDecodedText = () => {
     if (!inputText) return "";
     
     if (cipherType === "atbash") {
       return decodeAtbash(inputText);
-    } else if (cipherType === "nextLetter") {
-      return decodeNextLetter(inputText);
+    } else if (cipherType === "caesar-minus-1") {
+      return decodeCaesar(inputText, -1);
+    } else if (cipherType === "caesar-plus-1") {
+      return decodeCaesar(inputText, 1);
     }
     return inputText;
   };
 
-  // Logica de filtragem apenas por data
   const filteredSigns = zodiacSigns.filter((sign) => {
     if (!searchMonth || !searchDay) return true;
 
@@ -101,7 +99,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-100 p-8 text-gray-900 flex flex-col gap-6">
       
-      {/* Container do Decifrador */}
       <div className="max-w-2xl w-full mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6 text-center text-blue-900">
           Murdle Companion BR
@@ -116,7 +113,6 @@ export default function Home() {
               </p>
             </div>
             
-            {/* Seletor do Tipo de Cifra */}
             <div className="w-full sm:w-auto">
               <label className="sr-only">Tipo de Cifra</label>
               <select 
@@ -124,8 +120,9 @@ export default function Home() {
                 value={cipherType}
                 onChange={(e) => setCipherType(e.target.value)}
               >
-                <option value="atbash">Cifra de Atbash (Invertida)</option>
-                <option value="nextLetter">Cifra da Letra Seguinte (+1)</option>
+                <option value="atbash">Atbash (Invertida)</option>
+                <option value="caesar-plus-1">Cesar: Avancar 1 Letra (+1) (Tlz para Uma)</option>
+                <option value="caesar-minus-1">Cesar: Recuar 1 Letra (-1) (gbdb para faca)</option>
               </select>
             </div>
           </div>
@@ -144,11 +141,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Container da Tabela com Busca por Data */}
       <div className="max-w-2xl w-full mx-auto bg-white p-6 rounded-lg shadow-md overflow-hidden">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Referencia de Signos</h2>
         
-        {/* Painel de Filtro de Data */}
         <div className="mb-6 flex items-end gap-3 bg-gray-50 p-4 rounded border border-gray-200">
           
           <div className="flex-1">
@@ -249,7 +244,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="max-w-2xl w-full mx-auto mt-4 text-center text-sm text-gray-500 flex flex-col items-center gap-4">
         
         <div className="flex items-center gap-2 text-gray-700 font-medium">
